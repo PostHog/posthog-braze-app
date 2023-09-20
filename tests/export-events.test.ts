@@ -82,6 +82,7 @@ test('exportEvents sends $set attributes and events to Braze', async () => {
             brazeEndpoint: 'US-03',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email,name',
+            eventsToExportUserPropertiesFrom: 'account created',
         },
         global: {},
     } as BrazeMeta
@@ -148,7 +149,7 @@ test('exportEvents multiple events to Braze', async () => {
             brazeEndpoint: 'US-03',
             eventsToExport: 'account created,account_updated',
             userPropertiesToExport: 'email,name',
-            importUserAttributesInAllEvents: 'Yes',
+            eventsToExportUserPropertiesFrom: 'account created,$identify,account_updated',
         },
         global: {},
     } as BrazeMeta
@@ -239,7 +240,7 @@ test('exportEvents multiple events to Braze', async () => {
     })
 })
 
-test('exportEvents user properties not sent', async () => {
+test('exportEvents user properties not sent on empty userPropertiesToExport', async () => {
     const mockService = jest.fn()
 
     server.use(
@@ -255,6 +256,67 @@ test('exportEvents user properties not sent', async () => {
         config: {
             brazeEndpoint: 'US-01',
             eventsToExport: 'account created',
+            eventsToExportUserPropertiesFrom: 'account created',
+        },
+        global: {},
+    } as BrazeMeta
+
+    await setupPlugin(meta)
+    await exportEvents(
+        [
+            {
+                event: 'account created',
+                timestamp: '2023-06-16T00:00:00.00Z',
+                properties: {
+                    $set: {
+                        email: 'test@posthog',
+                        name: 'Test User',
+                    },
+                    is_a_demo_user: true,
+                },
+                distinct_id: 'test',
+                ip: '',
+                site_url: '',
+                team_id: 0,
+                now: new Date().toISOString(),
+            },
+        ],
+        meta
+    )
+
+    expect(mockService).toHaveBeenCalledWith({
+        attributes: [],
+        events: [
+            {
+                // NOTE: $set properties are filtered out
+                properties: {
+                    is_a_demo_user: true,
+                },
+                external_id: 'test',
+                name: 'account created',
+                time: '2023-06-16T00:00:00.00Z',
+            },
+        ],
+    })
+})
+
+test('exportEvents user properties not sent on empty eventsToExportUserPropertiesFrom', async () => {
+    const mockService = jest.fn()
+
+    server.use(
+        rest.post('https://rest.iad-01.braze.com/users/track', (req, res, ctx) => {
+            const requestBody = req.body
+            mockService(requestBody)
+            return res(ctx.status(200), ctx.json({ message: 'success', attributes_processed: 1 }))
+        })
+    )
+
+    // Create a meta object that we can pass into the setupPlugin and exportEvents
+    const meta = {
+        config: {
+            brazeEndpoint: 'US-01',
+            eventsToExport: 'account created',
+            userPropertiesToExport: 'email,name',
         },
         global: {},
     } as BrazeMeta
@@ -315,7 +377,7 @@ test('exportEvents user properties are passed for $identify event even if $ident
             brazeEndpoint: 'EU-01',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email',
-            importUserAttributesInAllEvents: 'Yes',
+            eventsToExportUserPropertiesFrom: 'account created,$identify',
         },
         global: {},
     } as BrazeMeta
@@ -371,7 +433,7 @@ test('exportEvents user properties are not passed for non-whitelisted events', a
             brazeEndpoint: 'US-01',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email',
-            importUserAttributesInAllEvents: 'No',
+            eventsToExportUserPropertiesFrom: 'account created',
         },
         global: {},
     } as BrazeMeta
@@ -430,7 +492,7 @@ test('Braze API error (e.g. 400) are not retried', async () => {
             brazeEndpoint: 'US-02',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email',
-            importUserAttributesInAllEvents: 'Yes',
+            eventsToExportUserPropertiesFrom: 'account created,$identify',
         },
         global: {},
     } as BrazeMeta
@@ -480,7 +542,7 @@ test('Braze offline error (500 response)', async () => {
             brazeEndpoint: 'US-02',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email',
-            importUserAttributesInAllEvents: 'Yes',
+            eventsToExportUserPropertiesFrom: 'account created,$identify',
         },
         global: {},
     } as BrazeMeta
@@ -530,7 +592,7 @@ test('Braze offline error (network error)', async () => {
             brazeEndpoint: 'US-02',
             eventsToExport: 'account created',
             userPropertiesToExport: 'email',
-            importUserAttributesInAllEvents: 'Yes',
+            eventsToExportUserPropertiesFrom: 'account created,$identify',
         },
         global: {},
     } as BrazeMeta

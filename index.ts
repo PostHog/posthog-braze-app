@@ -2,7 +2,6 @@ import { Plugin, PluginEvent, PluginMeta, Properties, RetryError } from '@postho
 import crypto from 'crypto'
 import fetch, { RequestInit, Response } from 'node-fetch'
 
-
 export type FetchBraze = (
     endpoint: string,
     options: Partial<RequestInit>,
@@ -19,16 +18,9 @@ type BrazePlugin = Plugin<{
     config: {
         brazeEndpoint: 'US-01' | 'US-02' | 'US-03' | 'US-04' | 'US-05' | 'US-06' | 'US-08' | 'EU-01' | 'EU-02'
         apiKey: string
-        importCampaigns: BooleanChoice
-        importCanvases: BooleanChoice
-        importCustomEvents: BooleanChoice
-        importFeeds: BooleanChoice
-        importKPIs: BooleanChoice
-        importSegments: BooleanChoice
-        importSessions: BooleanChoice
         eventsToExport: string
         userPropertiesToExport: string
-        importUserAttributesInAllEvents: BooleanChoice
+        eventsToExportUserPropertiesFrom: string
     }
 }>
 
@@ -168,8 +160,7 @@ const _generateBrazeRequestBody = (pluginEvent: PluginEvent, meta: BrazeMeta): B
         return filtered
     }, {} as Properties)
 
-    const shouldImportAttributes =
-        meta.config.importUserAttributesInAllEvents === 'Yes' || meta.config.eventsToExport?.split(',').includes(event)
+    const shouldImportAttributes = meta.config.eventsToExportUserPropertiesFrom?.split(',').includes(event)
 
     const attributes: Array<BrazeAttribute> =
         shouldImportAttributes && Object.keys(filteredProperties).length
