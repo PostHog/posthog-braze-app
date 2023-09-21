@@ -26,69 +26,6 @@
             "secret": true
         },
         {
-            "key": "importCampaigns",
-            "hint": "Do you want to import [Campaign](https://www.braze.com/docs/user_guide/engagement_tools/campaigns) analytics?",
-            "name": "Import Campaigns",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importCanvases",
-            "hint": "Do you want to import [Canvas](https://www.braze.com/docs/user_guide/engagement_tools/canvas) analytics?",
-            "name": "Import Canvas",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importCustomEvents",
-            "hint": "Do you want to import [Custom Events](https://www.braze.com/docs/user_guide/data_and_analytics/custom_data) analytics?",
-            "name": "Import Custom Events",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importFeeds",
-            "hint": "Do you want to import [News Feed](https://www.braze.com/docs/user_guide/engagement_tools/news_feed) analytics?",
-            "name": "Import News Feed Cards",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importKPIs",
-            "hint": "Do you want to import KPIs (Daily New Users, DAU, MAU, Daily Uninstalls)?",
-            "name": "Import KPIs",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importSegments",
-            "hint": "Do you want to import [Segment](https://www.braze.com/docs/user_guide/engagement_tools/segments) analytics?",
-            "name": "Import Segments",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
-            "key": "importSessions",
-            "hint": "Do you want to import daily Sessions?",
-            "name": "Import Sessions",
-            "type": "choice",
-            "default": "Yes",
-            "required": true,
-            "choices": ["Yes", "No"]
-        },
-        {
             "key": "eventsToExport",
             "hint": "A comma separated list of events you want to export to Braze. Leave empty to export no events.",
             "name": "Events to Export",
@@ -105,13 +42,12 @@
             "required": false
         },
         {
-            "key": "importUserAttributesInAllEvents",
-            "hint": "Will look for whitelisted user attributes to send to Braze in all events as opposed to only whitelisted events.",
-            "name": "Import User Attributes on All Events",
-            "type": "choice",
-            "default": "No",
-            "required": true,
-            "choices": ["Yes", "No"]
+            "key": "eventsToExportUserPropertiesFrom",
+            "hint": "A comma separated list of events you want to find user properties in to export to Braze. Leave empty to export no user properties.",
+            "name": "Events for user properties search",
+            "type": "string",
+            "default": "",
+            "required": false
         }
     ]
 }
